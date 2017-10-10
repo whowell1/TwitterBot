@@ -1,0 +1,16 @@
+{
+  "name": "twitter_bot",
+  "version": "1.0.0",
+  "description": "twitter bot for LMC 2700",
+  "main": "bot.js",
+  "dependencies": {
+    "twit": "^2.2.9"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
