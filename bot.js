@@ -14,27 +14,17 @@ var params = {
 }
 
 
-
-
-var wordsToReplace = ["Trump", "fake news", "donald", "ivanka", "Donald Trump"];
+var wordsToReplace = ["Trump"];
 
 
 var wordsToOverWriteWith = ["OJ Simpson"];
 function gotData(err, data, response){
   var tweets = data.statuses;
   for (var i = 0; i < tweets.length; i++){
-  console.log(tweets[i].text.replace(wordsToReplace , wordsToOverWriteWith));
+      console.log(tweets[i].text.replace(wordsToReplace , wordsToOverWriteWith));
   }
 }
  var listOfTweets = T.get('search/tweets', params,gotData);
-
-
-
-
-
-
-
-
 
 
 
@@ -42,7 +32,7 @@ function gotData(err, data, response){
 //
 //   status: '#This is testbot wow. '
 // }
-
+//
 // T.post('statuses/update' , tweet, tweeted);
 //
 //
