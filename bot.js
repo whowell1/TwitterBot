@@ -5,6 +5,10 @@ var Twit = require('twit');
 var config = require('./config');
 // console.log(config);
 var T = new Twit(config);
+var retweet ="";
+var modifiedTweets = [];
+
+
 
 var params = {
   q: 'Donald Trump since:2017-10-4',
@@ -13,25 +17,24 @@ var params = {
   lang: 'en'
 }
 
-var wordsToReplace = ['Trump', 'fake news', 'Donald', 'Ivanka'];
+var wordsToReplace = ['Trump', 'fake news', 'Donald', 'Ivanka', "donald", "trump"];
 
 function gotData(err, data, response) {
   var tweets = data.statuses;
-  var modifiedTweets = [];
   for (var i = 0; i < tweets.length; i++) {
     // console.log(tweets[i].text.replace(wordsToReplace , wordsToOverWriteWith));
     modifiedTweet = containsWordsToReplace(tweets[i].text, wordsToReplace);
+    if (modifiedTweet.length  > 135){
+      modifiedTweet = modifiedTweet.substring(0,135);
+      console.log(modifiedTweet.length);
+    }
     modifiedTweets.push(modifiedTweet);
 
   }
-  
-   var tweet = {
-    status: modifiedTweets[0]
-    }
+sendRetweet(modifiedTweets[Math.floor(Math.random()*9)]);
 
-  T.post('statuses/update' , tweet, tweeted);
+  // return modifiedTweets;
 }
-
 
 function containsWordsToReplace(text, replacements) {
   var split = text.split(" ");
@@ -47,20 +50,22 @@ function containsWordsToReplace(text, replacements) {
 }
 var listOfTweets = T.get('search/tweets', params, gotData);
 
-
-
-
-
-
-// console.log(gotData());
-
-
-
-
 function tweeted(err, data,response) {
   if (err){
-    console.log("Something went wrong");
+
+    console.log("Something went wrong sending retweet");
+    console.log(err);
   } else {
     console.log("It worked");
   }
+}
+
+function sendRetweet(retweet){
+  var tweet = {
+   status: retweet
+   }
+
+
+ T.post('statuses/update' , tweet, tweeted);
+
 }
