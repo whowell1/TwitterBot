@@ -35,8 +35,9 @@ function containsWordsToReplace(text, replacements) {
   var modifiedTweet = split.map(function(word) {
     for (var i = 0; i < replacements.length; i++) {
       if (word.includes(replacements[i])) {
-        // word = [" ***" , "a7"];
-        word = replacementWords[i];
+
+        word = ["OJ Simpson"];
+
 
 
       }
