@@ -15,6 +15,7 @@ var params = {
 }
 
 var wordsToReplace = ['Trump', 'fake news', 'Donald', 'Ivanka', "donald", "trump"];
+var replacementWords = ['***', '&&&&', '555', '11111','3333', '5555'];
 
 function gotData(err, data, response) {
   var tweets = data.statuses;
@@ -34,7 +35,10 @@ function containsWordsToReplace(text, replacements) {
   var modifiedTweet = split.map(function(word) {
     for (var i = 0; i < replacements.length; i++) {
       if (word.includes(replacements[i])) {
-        word = '************';
+        // word = [" ***" , "a7"];
+        word = replacementWords[i];
+
+
       }
     }
     return word;
@@ -60,5 +64,4 @@ function sendRetweet(retweet) {
   }
   T.post('statuses/update', tweet, tweeted);
 }
-
 T.get('search/tweets', params, gotData);
