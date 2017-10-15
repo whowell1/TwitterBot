@@ -4,7 +4,9 @@
   "description": "twitter bot for LMC 2700",
   "main": "bot.js",
   "dependencies": {
+    "awesome-quotes": "^0.2.1",
     "cat-names": "^1.0.2",
+    "fetch-quote": "^1.0.0",
     "twit": "^2.2.9"
   },
   "devDependencies": {},

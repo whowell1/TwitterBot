@@ -2,79 +2,60 @@ console.log("The bot is starting ");
 
 var Twit = require('twit');
 var catNames  = require('cat-names');
-
 var config = require('./config');
+var debug = false;
+
 var T = new Twit(config);
-var retweet = "";
-var modifiedTweets = [];
-
-var params = {
-  q: 'Trump since:2017-10-4',
-  count: 8,
-  result_type: 'recent',
-  lang: 'en'
-}
-
-var wordsToReplace = ['Trump', 'fake news', 'Donald', 'Ivanka', "donald", "trump"];
 
 
+var names = [ "Khorloogiin Choibalsan" , "Adolf Hitler" ,  "Francisco Franco" , "Idi Amin" ,
+             "Joseph Stalin" , "Abdul Nacer Benbrika" ,
+             "Christoper Columbus", "King Leopold II" , "Augusto Pinochet" ,
+             "Mehmet Talat Paşa" , "Tomas de Torquemada" , "Robert Mugabe" , "Koki Hirota" ,
+             "Chiang Kai-shek"
+];
 
-var randomNames = ["Lebron James and ", " OJ Simpson", ""];
 
-var followComments = [
-                        "I bet he wanted to marry " + catNames.random() + " instead",
-                        "I think he got maybe " + Math.floor(Math.random(0,1)*50) + " year(s) left in him",
+var issues = [ "global warming" , "education" , "poverty" , "womens rights" , "gay rights" ,
+             "civil war" , " ethnic violence" , "corrupt police" , "cyber warfare"
+];
 
-                      ];
+
 
 Array.prototype.pick = function() {
                       	return this[Math.floor(Math.random()*this.length)];
                     }
-
-
-
-function gotData(err, data, response) {
-  var tweets = data.statuses;
-  for (var i = 0; i < tweets.length; i++) {
-    modifiedTweet = containsWordsToReplace(tweets[i].text, wordsToReplace);
-    if (modifiedTweet.length > 135) {
-      modifiedTweet = modifiedTweet.substring(0, 135);
-    }
-    modifiedTweets.push(modifiedTweet);
-  }
-  sendRetweet(modifiedTweets[Math.floor(Math.random() * 9)]);
-
+Array.prototype.pickAndPad = function() {
+                    	return this.pick() + " ";
+                    }
+function history(){
+ var facts = "";
+ names = names.pickAndPad();
+ facts += names
+ facts += " killed more than "
+ facts += Math.floor(Math.random()*10000)
+  facts += "people "
+ facts += issues.pickAndPad();
+ facts += "ruins more lives. Read about " + names + "on Wikipedia. Stay woke.";
+ return facts.trim();
 }
 
-function containsWordsToReplace(text, replacements) {
-  var split = text.split(" ");
-  var modifiedTweet = split.map(function(word) {
-    for (var i = 0; i < replacements.length; i++) {
-      if (word.includes(replacements[i])) {
-        word = randomNames.pick()
-      }
-    }
-    return word;
-  });
-  return modifiedTweet.join(" ");
+function tweet() {
+	var tweetText = history();
+	if (debug)
+		console.log(tweetText);
+	else
+		T.post('statuses/update', {status: tweetText }, function(err, reply) {
+			if (err !== null) {
+				console.log('Error: ', err);
+			}
+			else {
+				console.log('Tweeted: ', tweetText);
+			}
+		});
+}
+function run() {
+	tweet();
 }
 
-function tweeted(err, data, response) {
-  if (err) {
-    console.log("Something went wrong sending retweet");
-    setTimeOut(function() {
-      T.get('search/tweets', params, gotData);
-    }, 200);
-    console.log(err);
-  } else {
-    console.log("It worked");
-  }
-}
-
-function sendRetweet(retweet) {
-  var tweet = {
-    status: retweet
-  }
-  T.post('statuses/update', tweet, tweeted);
-}
-T.get('search/tweets', params, gotData);
+// console.log(history().length);
