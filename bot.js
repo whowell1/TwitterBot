@@ -17,6 +17,22 @@ var params = {
 var wordsToReplace = ['Trump', 'fake news', 'Donald', 'Ivanka', "donald", "trump"];
 var replacementWords = ['***', '&&&&', '555', '11111','3333', '5555'];
 
+
+
+
+var followComments = [
+                        "I bet he wanted to marry " + catNames.random() + " instead",
+                        "I think he got maybe " + Math.floor(Math.random(0,1)*50) + " year(s) left in him",
+                        // "Sometime I wish I would " + noun.  + "with her",
+                        // "I really wish I could"  + verb. + "as a president",
+                      ];
+
+Array.prototype.pick = function() {
+                      	return this[Math.floor(Math.random()*this.length)];
+                    }
+
+
+
 function gotData(err, data, response) {
   var tweets = data.statuses;
   for (var i = 0; i < tweets.length; i++) {
@@ -35,11 +51,7 @@ function containsWordsToReplace(text, replacements) {
   var modifiedTweet = split.map(function(word) {
     for (var i = 0; i < replacements.length; i++) {
       if (word.includes(replacements[i])) {
-
         word = ["OJ Simpson"];
-
-
-
       }
     }
     return word;
