@@ -13,7 +13,7 @@ var names = ["Khorloogiin Choibalsan", "Adolf Hitler", "Francisco Franco", "Idi 
 ];
 
 var issues = ["global warming", "education", "poverty", "womens rights", "gay rights",
-  "civil war", " ethnic violence", "corrupt police", "cyber warfare"
+  "civil war", " ethnic violence", "corrupt police", "cyber warfare", "US Presidents" , "Justin Bieber"
 ];
 
 Array.prototype.pick = function() {
@@ -64,8 +64,6 @@ function history() {
     facts += issues.pickAndPad();
     facts += "ruins more lives. Read about " + names + "on Wiki ";
     facts += url;
-    // console.log(facts);
-    // console.log(facts.trim());
     return facts;
   }
 
