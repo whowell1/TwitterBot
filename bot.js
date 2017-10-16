@@ -13,7 +13,7 @@ var names = ["Khorloogiin Choibalsan", "Adolf Hitler", "Francisco Franco", "Idi 
 ];
 
 var issues = ["global warming", "education", "poverty", "womens rights", "gay rights",
-  "civil war", " ethnic violence", "corrupt police", "cyber warfare", "US Presidents" , "Justin Bieber"
+  "civil war", " ethnic violence", "corrupt police", "cyber warfare", "US Presidents", "Justin Bieber"
 ];
 
 Array.prototype.pick = function() {
@@ -51,42 +51,41 @@ function history() {
     url = "https://goo.gl/mdTFpT";
   } else if (names.includes("Chiang Kai-shek")) {
     url = "https://goo.gl/7BMY7R";
-  } else if(names.includes("Christoper Columbus")) {
+  } else if (names.includes("Christoper Columbus")) {
     url = "https://goo.gl/MEH8g6";
-  }
-  else{
+  } else {
     url = '';
   }
-    facts += names
-    facts += "killed more than "
-    facts += " " + Math.floor(Math.random() * 10000)
-    facts += " people "
-    facts += issues.pickAndPad();
-    facts += "ruins more lives. Read about " + names + "on Wiki ";
-    facts += url;
-    return facts;
+  facts += names
+  facts += "killed more than "
+  facts += " " + Math.floor(Math.random() * 10000)
+  facts += " people "
+  facts += issues.pickAndPad();
+  facts += "ruins more lives. Read about " + names + "on Wiki ";
+  facts += url;
+  return facts;
+}
+
+
+
+function tweeted(err, data, response) {
+  if (err) {
+    console.log("Something went wrong");
+  } else {
+    console.log("It worked");
   }
+}
 
+function tweet() {
+  var tweetText = history();
+  T.post('statuses/update', {
+    status: tweetText
+  }, tweeted);
 
+}
 
-  function tweeted(err, data, response) {
-    if (err) {
-      console.log("Something went wrong");
-    } else {
-      console.log("It worked");
-    }
-  }
+function run() {
+  tweet();
+}
 
-  function tweet() {
-    var tweetText = history();
-    T.post('statuses/update', {
-      status: tweetText
-    }, tweeted);
-
-  }
-
-  function run() {
-    tweet();
-  }
-
-  run();
+run();
