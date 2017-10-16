@@ -3,9 +3,12 @@ console.log("The bot is starting ");
 var Twit = require('twit');
 var catNames = require('cat-names');
 var config = require('./config');
-var debug = true;
+var request = require("request");
+var debug = false;
+var newYorkTimesApiKey = "a05afe51ee714541b68ecea8dac10cbf";
+
 var T = new Twit(config);
-var names = ["Khorloogiin Choibalsan", "Adolf Hitler", "Francisco Franco", "Idi Amin",
+var names = ["Khor Choibalsan", "Adolf Hitler", "Francisco Franco", "Idi Amin",
   "Joseph Stalin", "Bashar al-Assad",
   "Christoper Columbus", "King Leopold II", "Augusto Pinochet",
   "Talaat Pasha", "Tomas de Torquemada", "Robert Mugabe", "Koki Hirota",
@@ -13,7 +16,7 @@ var names = ["Khorloogiin Choibalsan", "Adolf Hitler", "Francisco Franco", "Idi 
 ];
 
 var issues = ["global warming", "education", "poverty", "womens rights", "gay rights",
-  "civil war", " ethnic violence", "corrupt police", "cyber warfare", "US Presidents", "Justin Bieber"
+  "civil wars", " ethnic violence", "corrupt police", "cyber warfare", "US Presidents", "Artifical Intelligence"
 ];
 
 Array.prototype.pick = function() {
@@ -23,13 +26,14 @@ Array.prototype.pickAndPad = function() {
   return this.pick() + " ";
 }
 
+
 function history() {
   var facts = "";
   var url = ""
   names = names.pickAndPad();
   if (names.includes("Idi Amin")) {
     url = "https://goo.gl/YaXphN";
-  } else if (names.includes("Khorloogiin Choibalsan")) {
+  } else if (names.includes("Kho Choibalsan")) {
     url = "https://goo.gl/Azeq8s";
   } else if (names.includes("Adolf Hitler")) {
     url = "https://goo.gl/qU3Y81";
@@ -67,10 +71,43 @@ function history() {
 }
 
 
+var nyTimesURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?" + "api-key=" + newYorkTimesApiKey + "&q=" +issues.pickAndPad().replace(" " , "%20");
+
+function getArticle(){
+  var data = request(nyTimesURL, function(err,res,body){
+    body = JSON.parse(body);
+    return (body.response.docs[0].headline.main);
+  })
+}
+
+console.log(getArticle());
+
+//
+// function tweetPerson(event) {
+//   var replyTo = event.in_reply_to_screen_name;
+//   var from = event.user.screen_name;
+//   var location = event.location;
+//
+//   // if (replyTo === "lotusFyre1") {
+//   //   var replyTweet = "@" + from +
+//   // }
+//
+// }
+
+// function tweetJSON(eventMsg){
+//   var fs = require('fs');
+//   var json = JSON.stringify(eventMsg,null,2);
+//   fs.writeFile("tweet.json", json);
+// }
+
+
 
 function tweeted(err, data, response) {
   if (err) {
     console.log("Something went wrong");
+    console.log(err);
+  
+
   } else {
     console.log("It worked");
   }
@@ -78,9 +115,7 @@ function tweeted(err, data, response) {
 
 function tweet() {
   var tweetText = history();
-  T.post('statuses/update', {
-    status: tweetText
-  }, tweeted);
+  T.post('statuses/update', {status: tweetText}, tweeted);
 
 }
 
