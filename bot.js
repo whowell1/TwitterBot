@@ -1,7 +1,6 @@
 console.log("The bot is starting ");
 
 var Twit = require('twit');
-var catNames = require('cat-names');
 var config = require('./config');
 var request = require("request");
 var debug = false;
@@ -13,6 +12,12 @@ var names = ["Khor Choibalsan", "Adolf Hitler", "Francisco Franco", "Idi Amin",
   "Christoper Columbus", "King Leopold II", "Augusto Pinochet",
   "Talaat Pasha", "Tomas de Torquemada", "Robert Mugabe", "Koki Hirota",
   "Chiang Kai-shek"
+];
+
+var trivia = [
+  "Who is the richest person of all time?",
+  "What continent has the most imports of slaves?",
+  "What does the origins of the word of hip-hop?"
 ];
 
 var issues = ["global warming", "education", "poverty", "womens rights", "gay rights",
@@ -58,30 +63,39 @@ function history() {
   } else if (names.includes("Christoper Columbus")) {
     url = "https://goo.gl/MEH8g6";
   } else {
-    url = '';
+    url = 'https://goo.gl/xahXHC';
   }
   facts += names
   facts += "killed more than "
-  facts += " " + Math.floor(Math.random() * 10000)
-  facts += " people "
+  facts += Math.floor(Math.random() * 10000)
+  facts += " people but "
   facts += issues.pickAndPad();
   facts += "ruins more lives. Read about " + names + "on Wiki ";
   facts += url;
-  return facts;
+  console.log(facts.length);
+  if (facts.length >= 140) {
+    facts = "";
+    facts += trivia.pickAndPad();
+    // facts += triviaResponse.pickAndPad();
+    return facts;
+  } else {
+    return facts;
+  }
 }
 
 
-var nyTimesURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?" + "api-key=" + newYorkTimesApiKey + "&q=" +issues.pickAndPad().replace(" " , "%20");
+var nyTimesURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?" + "api-key=" + newYorkTimesApiKey + "&q=" + issues.pickAndPad().replace(" ", "%20");
 
-function getArticle(){
-  var data = request(nyTimesURL, function(err,res,body){
+
+function getArticle() {
+  var data = request(nyTimesURL, function(error, response, body) {
     body = JSON.parse(body);
-    return (body.response.docs[0].headline.main);
+    // console.log (body.response.docs[0].headline.main);
   })
+  return data;
 }
 
-console.log(getArticle());
-
+// console.log(getArticle());
 //
 // function tweetPerson(event) {
 //   var replyTo = event.in_reply_to_screen_name;
@@ -106,7 +120,6 @@ function tweeted(err, data, response) {
   if (err) {
     console.log("Something went wrong");
     console.log(err);
-  
 
   } else {
     console.log("It worked");
@@ -115,7 +128,9 @@ function tweeted(err, data, response) {
 
 function tweet() {
   var tweetText = history();
-  T.post('statuses/update', {status: tweetText}, tweeted);
+  T.post('statuses/update', {
+    status: tweetText
+  }, tweeted);
 
 }
 
@@ -124,3 +139,5 @@ function run() {
 }
 
 run();
+
+// setInterval(run, 1000 * 60 * 60);
