@@ -4,6 +4,8 @@ var Twit = require('twit');
 var config = require('./config');
 var request = require("request");
 var newYorkTimesApiKey = "a05afe51ee714541b68ecea8dac10cbf";
+var catNames = require('cat-names');
+
 
 var T = new Twit(config);
 var names = ["Khor Choibalsan", "Adolf Hitler", "Francisco Franco", "Idi Amin",
@@ -11,6 +13,12 @@ var names = ["Khor Choibalsan", "Adolf Hitler", "Francisco Franco", "Idi Amin",
   "Christoper Columbus", "King Leopold II", "Augusto Pinochet",
   "Talaat Pasha", "Tomas de Torquemada", "Robert Mugabe", "Koki Hirota",
   "Chiang Kai-shek"
+];
+
+var tweetEventComments= [ "You know you should have married " + catNames.random() + "instead",
+"I am blessed to be in your presence",
+"I love the work that you do",
+"Please help me be like you"
 ];
 
 var trivia = [
@@ -27,6 +35,14 @@ var triviaAnswers = [
  "Google it",
  "read about it",
  "Ask your teacher about it"
+];
+
+
+var livingFamousAuthors = [
+ "Noam Chomsky", "Howard Zinn", "Eben Moglen" , "Jacob Appelbaum", "Robert Cailliau"
+
+
+
 ];
 
 var issues = ["global warming", "education", "poverty", "womens rights", "gay rights",
@@ -71,6 +87,10 @@ function history() {
     url = "https://goo.gl/7BMY7R";
   } else if (names.includes("Christoper Columbus")) {
     url = "https://goo.gl/MEH8g6";
+  } else if (names.includes("Joseph Stalin")){
+    url = "https://goo.gl/n1zgFc";
+  } else if(names.includes("Khor Choibalsan"))  {
+     url = "https://goo.gl/5m6km4";
   } else {
     url = 'https://goo.gl/xahXHC';
   }
@@ -96,46 +116,25 @@ function history() {
 var nyTimesURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?" + "api-key=" + newYorkTimesApiKey + "&q=" + issues.pickAndPad().replace(" ", "%20");
 
 
+function tweetEvent(eventMsg){
+  var replyTo = eventMsg.in_reply_to_screen_name;
+  var text = eventMsg.text;
+  var from = eventMsg.user.screen_name;
+  if (replyTo == "lotusFyre1"){
+  var text = ("@" + from + tweetEventComments.pickAndPad());
+  postTweet(text);
 
-// function getArticle(){
-//   var response;
-//   var data = request(nyTimesURL, function(err,res,body){
-//     body = JSON.parse(body);
-//     var body = body.response.docs[0].headline.main;
-//     console.log("API Response " + body);
-//     return body;
-//   })
-//   return data;
-//   // console.log(data);
-// }
-//
-//
-
-//  request(nyTimesURL, function(err,res,body){
-//   body = JSON.parse(body);
-//   var url = body.response.docs[Math.floor(Math.random() * 9)].web_url;
-//   tweetItTimes(url);
-// });
-
-
-
-function tweetPerson(event) {
-  var replyTo = event.in_reply_to_screen_name;
-  var from = event.user.screen_name;
-  var location = event.location;
-
-  if (replyTo === "lotusFyre1") {
-    var replyTweet = "@" + from; // this is where I have the results of data
   }
-
 }
 
-// function tweetJSON(eventMsg){
-//   var fs = require('fs');
-//   var json = JSON.stringify(eventMsg,null,2);
-//   fs.writeFile("tweet.json", json);
-// }
 
+function followed(eventMsg){
+  var name = eventMsg.source;
+  var screenName = eventMsg.source.screen_name;
+  var text = " You should read more about";
+  text += livingFamousAuthors.pickAndPad();
+  postTweet(text);
+}
 
 
 function tweeted(err, data, response) {
@@ -157,8 +156,10 @@ function postTweet(text){
 function tweetItTimes(url) {
   request(nyTimesURL, function(err,res,body){
    body = JSON.parse(body);
-   var url = "You should be aware of what is going on in the world, Here is a article for you ";
-     url += body.response.docs[Math.floor(Math.random() * 9)].web_url;
+   var url = "You should be aware of what is going on in the world, Here is a article for you read today ";
+  //  url += body.response.docs[0].headline.main
+  url += body.response.docs[Math.floor(Math.random() * 9)].web_url;
+    //  url += body.response.docs[Math.floor(Math.random() * 9)].web_url;
    postTweet(url);
   });
 }
@@ -169,6 +170,10 @@ function tweetItHistory(url) {
 }
 
 function run() {
+  // var stream = T.stream('user');
+  // stream.on('follow', followed);
+  // stream.on('tweet',tweetEvent);
+
   tweetItTimes();
   tweetItHistory();
 }
