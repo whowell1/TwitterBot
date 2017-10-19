@@ -3,7 +3,6 @@ console.log("The bot is starting ");
 var Twit = require('twit');
 var config = require('./config');
 var request = require("request");
-var debug = false;
 var newYorkTimesApiKey = "a05afe51ee714541b68ecea8dac10cbf";
 
 var T = new Twit(config);
@@ -17,7 +16,17 @@ var names = ["Khor Choibalsan", "Adolf Hitler", "Francisco Franco", "Idi Amin",
 var trivia = [
   "Who is the richest person of all time?",
   "What continent has the most imports of slaves?",
-  "What does the origins of the word of hip-hop?"
+  "What does the origins of the word of hip-hop?",
+  "Which American inventor is generally given credit for the invention of the lightning rod?"
+];
+
+
+var triviaAnswers = [
+ "You should look it up",
+ "You should read more",
+ "Google it",
+ "read about it",
+ "Ask your teacher about it"
 ];
 
 var issues = ["global warming", "education", "poverty", "womens rights", "gay rights",
@@ -72,10 +81,10 @@ function history() {
   facts += issues.pickAndPad();
   facts += "ruins more lives. Read about " + names + "on Wiki ";
   facts += url;
-  console.log(facts.length);
-  if (facts.length >= 140) {
+  if (facts.length >= 135) {
     facts = "";
     facts += trivia.pickAndPad();
+    facts += triviaAnswers.pickAndPad();
     // facts += triviaResponse.pickAndPad();
     return facts;
   } else {
@@ -87,26 +96,39 @@ function history() {
 var nyTimesURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?" + "api-key=" + newYorkTimesApiKey + "&q=" + issues.pickAndPad().replace(" ", "%20");
 
 
-function getArticle() {
-  var data = request(nyTimesURL, function(error, response, body) {
-    body = JSON.parse(body);
-    // console.log (body.response.docs[0].headline.main);
-  })
-  return data;
-}
 
-// console.log(getArticle());
-//
-// function tweetPerson(event) {
-//   var replyTo = event.in_reply_to_screen_name;
-//   var from = event.user.screen_name;
-//   var location = event.location;
-//
-//   // if (replyTo === "lotusFyre1") {
-//   //   var replyTweet = "@" + from +
-//   // }
-//
+// function getArticle(){
+//   var response;
+//   var data = request(nyTimesURL, function(err,res,body){
+//     body = JSON.parse(body);
+//     var body = body.response.docs[0].headline.main;
+//     console.log("API Response " + body);
+//     return body;
+//   })
+//   return data;
+//   // console.log(data);
 // }
+//
+//
+
+//  request(nyTimesURL, function(err,res,body){
+//   body = JSON.parse(body);
+//   var url = body.response.docs[Math.floor(Math.random() * 9)].web_url;
+//   tweetItTimes(url);
+// });
+
+
+
+function tweetPerson(event) {
+  var replyTo = event.in_reply_to_screen_name;
+  var from = event.user.screen_name;
+  var location = event.location;
+
+  if (replyTo === "lotusFyre1") {
+    var replyTweet = "@" + from; // this is where I have the results of data
+  }
+
+}
 
 // function tweetJSON(eventMsg){
 //   var fs = require('fs');
@@ -126,16 +148,29 @@ function tweeted(err, data, response) {
   }
 }
 
-function tweet() {
-  var tweetText = history();
+function postTweet(text){
   T.post('statuses/update', {
-    status: tweetText
+    status: text
   }, tweeted);
+}
 
+function tweetItTimes(url) {
+  request(nyTimesURL, function(err,res,body){
+   body = JSON.parse(body);
+   var url = "You should be aware of what is going on in the world, Here is a article for you ";
+     url += body.response.docs[Math.floor(Math.random() * 9)].web_url;
+   postTweet(url);
+  });
+}
+
+function tweetItHistory(url) {
+  var tweetText = history();
+  postTweet(tweetText);
 }
 
 function run() {
-  tweet();
+  tweetItTimes();
+  tweetItHistory();
 }
 
 run();
