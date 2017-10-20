@@ -6,7 +6,6 @@ var request = require("request");
 var newYorkTimesApiKey = "a05afe51ee714541b68ecea8dac10cbf";
 var catNames = require('cat-names');
 
-
 var T = new Twit(config);
 var names = ["Khor Choibalsan", "Adolf Hitler", "Francisco Franco", "Idi Amin",
   "Joseph Stalin", "Bashar al-Assad",
@@ -15,38 +14,39 @@ var names = ["Khor Choibalsan", "Adolf Hitler", "Francisco Franco", "Idi Amin",
   "Chiang Kai-shek"
 ];
 
-var tweetEventComments= [ "You know you should have married " + catNames.random() + "instead",
-"I am blessed to be in your presence",
-"I love the work that you do",
-"Please help me be like you"
+var tweetEventComments = ["You know you should have married " + catNames.random() + "instead",
+  "I am blessed to be in your presence",
+  "I love the work that you do",
+  "Please help me be like you"
 ];
 
 var trivia = [
   "Who is the richest person of all time?",
   "What continent has the most imports of slaves?",
   "What does the origins of the word of hip-hop?",
-  "Which American inventor is generally given credit for the invention of the lightning rod?"
+  'What does hip-hop and Shakespere have in common?'
 ];
 
 
 var triviaAnswers = [
- "You should look it up",
- "You should read more",
- "Google it",
- "read about it",
- "Ask your teacher about it"
+  "You should look it up",
+  "You should read more",
+  "Google it",
+  "read about it",
+  "Ask your teacher about it"
 ];
 
 
 var livingFamousAuthors = [
- "Noam Chomsky", "Howard Zinn", "Eben Moglen" , "Jacob Appelbaum", "Robert Cailliau"
+  "Noam Chomsky", "Howard Zinn", "Eben Moglen", "Jacob Appelbaum", "Robert Cailliau"
 
 
 
 ];
 
 var issues = ["global warming", "education", "poverty", "womens rights", "gay rights",
-  "civil wars", " ethnic violence", "corrupt police", "cyber warfare", "US Presidents", "Artifical Intelligence"
+  "civil wars", " ethnic violence", "corrupt police", "cyber warfare", "US Presidents", "Artifical Intelligence",
+  "nepotism" , "complancency"
 ];
 
 Array.prototype.pick = function() {
@@ -87,10 +87,10 @@ function history() {
     url = "https://goo.gl/7BMY7R";
   } else if (names.includes("Christoper Columbus")) {
     url = "https://goo.gl/MEH8g6";
-  } else if (names.includes("Joseph Stalin")){
+  } else if (names.includes("Joseph Stalin")) {
     url = "https://goo.gl/n1zgFc";
-  } else if(names.includes("Khor Choibalsan"))  {
-     url = "https://goo.gl/5m6km4";
+  } else if (names.includes("Khor Choibalsan")) {
+    url = "https://goo.gl/5m6km4";
   } else {
     url = 'https://goo.gl/xahXHC';
   }
@@ -116,23 +116,24 @@ function history() {
 var nyTimesURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?" + "api-key=" + newYorkTimesApiKey + "&q=" + issues.pickAndPad().replace(" ", "%20");
 
 
-function tweetEvent(eventMsg){
+function tweetEvent(eventMsg) {
   var replyTo = eventMsg.in_reply_to_screen_name;
   var text = eventMsg.text;
   var from = eventMsg.user.screen_name;
-  if (replyTo == "lotusFyre1"){
-  var text = ("@" + from + tweetEventComments.pickAndPad());
-  postTweet(text);
+  if (replyTo == "lotusFyre1") {
+    var text = ("@" + from + tweetEventComments.pickAndPad());
+    postTweet(text);
 
   }
 }
 
 
-function followed(eventMsg){
+function followed(eventMsg) {
   var name = eventMsg.source;
   var screenName = eventMsg.source.screen_name;
-  var text = " You should read more about";
-  text += livingFamousAuthors.pickAndPad();
+  // var text = " You should read more about ";
+  // text += livingFamousAuthors.pickAndPad();
+  text = "Hi";
   postTweet(text);
 }
 
@@ -140,27 +141,29 @@ function followed(eventMsg){
 function tweeted(err, data, response) {
   if (err) {
     console.log("Something went wrong");
-    console.log(err);
+    T.post('statuses/update', {
+      status: "I am done tweeting for now",
+    }, tweeted);
 
   } else {
     console.log("It worked");
   }
 }
 
-function postTweet(text){
+function postTweet(text) {
   T.post('statuses/update', {
     status: text
   }, tweeted);
 }
 
 function tweetItTimes(url) {
-  request(nyTimesURL, function(err,res,body){
-   body = JSON.parse(body);
-   var url = "You should be aware of what is going on in the world, Here is a article for you read today ";
-  //  url += body.response.docs[0].headline.main
-  url += body.response.docs[Math.floor(Math.random() * 9)].web_url;
+  request(nyTimesURL, function(err, res, body) {
+    body = JSON.parse(body);
+    var url = "You should be aware of what is going on in the world, Here is a article for you read today ";
+    //  url += body.response.docs[0].headline.main
+    url += body.response.docs[Math.floor(Math.random() * 9)].web_url;
     //  url += body.response.docs[Math.floor(Math.random() * 9)].web_url;
-   postTweet(url);
+    postTweet(url);
   });
 }
 
@@ -169,15 +172,26 @@ function tweetItHistory(url) {
   postTweet(tweetText);
 }
 
-function run() {
-  // var stream = T.stream('user');
-  // stream.on('follow', followed);
-  // stream.on('tweet',tweetEvent);
 
-  tweetItTimes();
-  tweetItHistory();
+
+
+var stream = T.stream('user');
+stream.on('follow', followed);
+stream.on('tweet', tweetEvent);
+
+function run() {
+  var stream = T.stream('user');
+  stream.on('follow', followed);
+  stream.on('tweet', tweetEvent);
+  var number = Math.floor(Math.random() * 500);
+  if (number < 250) {
+    tweetItTimes();
+  } else {
+    tweetItHistory();
+
+  }
 }
 
 run();
 
-// setInterval(run, 1000 * 60 * 60);
+setInterval(run, 1000 * 60 * 60);
