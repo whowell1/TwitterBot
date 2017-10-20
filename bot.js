@@ -46,7 +46,7 @@ var livingFamousAuthors = [
 
 var issues = ["global warming", "education", "poverty", "womens rights", "gay rights",
   "civil wars", " ethnic violence", "corrupt police", "cyber warfare", "US Presidents", "Artifical Intelligence",
-  "nepotism" , "complancency"
+  "nepotism" , "pollution"
 ];
 
 Array.prototype.pick = function() {
@@ -131,10 +131,14 @@ function tweetEvent(eventMsg) {
 function followed(eventMsg) {
   var name = eventMsg.source;
   var screenName = eventMsg.source.screen_name;
-  // var text = " You should read more about ";
-  // text += livingFamousAuthors.pickAndPad();
-  text = "Hi";
+  var text = '@' + screenName;
+  text += " You should read more about ";
+  text += livingFamousAuthors.pickAndPad();
   postTweet(text);
+  //
+  // T.post('statuses/update', {
+  //   status: "Hi nice to meet you!!!!!!!!!!!"
+  // }, tweeted);
 }
 
 
@@ -174,21 +178,22 @@ function tweetItHistory(url) {
 
 
 
-
+function test(){
 var stream = T.stream('user');
 stream.on('follow', followed);
 stream.on('tweet', tweetEvent);
+}
+test()
 
 function run() {
-  var stream = T.stream('user');
-  stream.on('follow', followed);
-  stream.on('tweet', tweetEvent);
+  // var stream = T.stream('user');
+  // stream.on('follow', followed);
+  // stream.on('tweet', tweetEvent);
   var number = Math.floor(Math.random() * 500);
   if (number < 250) {
     tweetItTimes();
   } else {
     tweetItHistory();
-
   }
 }
 
